@@ -1,9 +1,11 @@
-import Book from "@/components/Book/Book"
+import Hero from "@/components/Hero/Hero"
+import RecentBooks from "@/components/RecentBooks/RecentBooks"
 
 const Home = () => {
     return (
         <>
-        <Book></Book>
+        <Hero></Hero>
+        <RecentBooks></RecentBooks>
                     
         </>
     )

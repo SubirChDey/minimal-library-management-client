@@ -194,7 +194,7 @@ const AllBooks = () => {
         <button
           onClick={handlePrevPage}
           disabled={page === 1}
-          className={`px-4 py-2 rounded ${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          className={`px-4 py-2 rounded ${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'}`}
         >
           Previous
         </button>
@@ -204,7 +204,7 @@ const AllBooks = () => {
         <button
           onClick={handleNextPage}
           disabled={page === totalPages}
-          className={`px-4 py-2 rounded ${page === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+          className={`px-4 py-2 rounded ${page === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'}`}
         >
           Next
         </button>
