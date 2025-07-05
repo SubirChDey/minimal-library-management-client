@@ -3,7 +3,7 @@ import { Link } from "react-router";
 const HeroSection = () => {
   return (
     <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white min-h-[80vh] flex items-center
-                        dark:from-gray-900 dark:to-gray-800 dark:text-gray-200">
+                        dark:from-gray-900 dark:to-gray-800 dark:text-gray-200 pb-2">
       <div className="container mx-auto px-6 md:px-12 flex flex-col-reverse md:flex-row items-center justify-between">
         {/* Text Content */}
         <div className="md:w-1/2 space-y-6 text-center md:text-left">
