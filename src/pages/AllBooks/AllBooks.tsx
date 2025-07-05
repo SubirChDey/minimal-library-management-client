@@ -1,10 +1,17 @@
 import { useDeleteBookMutation, useGetBooksQuery, useBorrowBookMutation } from "@/redux/Features/bookApi";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const AllBooks = () => {
   const navigate = useNavigate();
-  const { data: books, isLoading, refetch } = useGetBooksQuery();
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  // API call with pagination params
+  const { data: books, isLoading, refetch } = useGetBooksQuery({ page, limit });
   const [deleteBook] = useDeleteBookMutation();
   const [borrowBook] = useBorrowBookMutation();
 
@@ -22,12 +29,35 @@ const AllBooks = () => {
 
   if (!Array.isArray(books?.data)) return <div>No books found.</div>;
 
-  // Delete Confirmation
+  // Delete Confirmation with Swal
   const handleDelete = (id: string) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this book?");
-    if (confirmDelete) {
-      deleteBook(id);
-    }
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await deleteBook(id).unwrap();
+          Swal.fire(
+            'Deleted!',
+            'The book has been deleted.',
+            'success'
+          );
+          refetch();
+        } catch (error) {
+          Swal.fire(
+            'Error!',
+            'Failed to delete the book.',
+            'error'
+          );
+        }
+      }
+    });
   };
 
   // Navigate to Edit Page
@@ -49,17 +79,17 @@ const AllBooks = () => {
   // Borrow Submit with validation and API call
   const handleBorrowSubmit = async () => {
     if (borrowForm.quantity < 1 || borrowForm.quantity > selectedBook.copies) {
-      alert(`Quantity must be between 1 and ${selectedBook.copies}`);
+      Swal.fire('Invalid Quantity', `Quantity must be between 1 and ${selectedBook.copies}`, 'warning');
       return;
     }
 
     if (!borrowForm.dueDate) {
-      alert("Please select a due date");
+      Swal.fire('Missing Due Date', 'Please select a due date', 'warning');
       return;
     }
 
     if (!borrowForm.borrowerName.trim()) {
-      alert("Please enter your name");
+      Swal.fire('Missing Name', 'Please enter your name', 'warning');
       return;
     }
 
@@ -71,13 +101,32 @@ const AllBooks = () => {
         borrowerName: borrowForm.borrowerName,
       }).unwrap();
 
-      alert("Book borrowed successfully!");
       setIsBorrowModalOpen(false);
       refetch();
 
+      Swal.fire({
+        title: 'Success!',
+        text: 'Book borrowed successfully!',
+        icon: 'success',
+        confirmButtonText: 'Go to Summary'
+      }).then(() => {
+        navigate('/borrow-summary');
+      });
+
     } catch (error) {
-      alert("Failed to borrow book");
+      Swal.fire('Error', 'Failed to borrow book', 'error');
     }
+  };
+
+  // Pagination controls
+  const totalPages = books?.meta?.totalPages || 1;
+
+  const handlePrevPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(page + 1);
   };
 
   return (
@@ -85,7 +134,7 @@ const AllBooks = () => {
       <h2 className="text-2xl font-semibold mb-4">All Books</h2>
       <table className="w-full border">
         <thead>
-          <tr className="bg-gray-200">
+          <tr className="bg-gray-200 dark:bg-gray-700 text-black dark:text-white">
             <th className="border p-2">Title</th>
             <th className="border p-2">Author</th>
             <th className="border p-2">Genre</th>
@@ -95,6 +144,7 @@ const AllBooks = () => {
             <th className="border p-2">Actions</th>
           </tr>
         </thead>
+
         <tbody>
           {books.data.map((book) => (
             <tr key={book._id}>
@@ -115,19 +165,19 @@ const AllBooks = () => {
               <td className="border p-2 space-x-2">
                 <button
                   onClick={() => handleEdit(book)}
-                  className="bg-blue-500 text-white px-2 py-1 rounded"
+                  className="bg-blue-500 text-white px-2 py-1 rounded cursor-pointer"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => handleDelete(book._id)}
-                  className="bg-red-500 text-white px-2 py-1 rounded"
+                  className="bg-red-500 text-white px-2 py-1 rounded cursor-pointer"
                 >
                   Delete
                 </button>
                 <button
                   onClick={() => handleBorrow(book)}
-                  className="bg-green-500 text-white px-2 py-1 rounded"
+                  className="bg-green-500 text-white px-2 py-1 rounded cursor-pointer"
                   disabled={book.copies === 0}
                   title={book.copies === 0 ? "No copies available" : "Borrow this book"}
                 >
@@ -139,10 +189,31 @@ const AllBooks = () => {
         </tbody>
       </table>
 
+      {/* Pagination */}
+      <div className="flex justify-center space-x-4 mt-4">
+        <button
+          onClick={handlePrevPage}
+          disabled={page === 1}
+          className={`px-4 py-2 rounded ${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+        >
+          Previous
+        </button>
+        <span className="self-center">
+          Page {page} of {totalPages}
+        </span>
+        <button
+          onClick={handleNextPage}
+          disabled={page === totalPages}
+          className={`px-4 py-2 rounded ${page === totalPages ? 'bg-gray-300 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-600'}`}
+        >
+          Next
+        </button>
+      </div>
+
       {/* Borrow Book Modal */}
       {isBorrowModalOpen && selectedBook && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded w-96">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded w-96 text-black dark:text-white">
             <h3 className="text-xl mb-4">Borrow Book</h3>
             <p><strong>Book:</strong> {selectedBook.title}</p>
 
@@ -154,7 +225,7 @@ const AllBooks = () => {
               onChange={(e) =>
                 setBorrowForm({ ...borrowForm, quantity: Number(e.target.value) })
               }
-              className="w-full border p-2 mb-2"
+              className="w-full border p-2 mb-2 dark:bg-gray-700 dark:text-white"
               placeholder={`Quantity (max ${selectedBook.copies})`}
             />
 
@@ -164,7 +235,7 @@ const AllBooks = () => {
               onChange={(e) =>
                 setBorrowForm({ ...borrowForm, dueDate: e.target.value })
               }
-              className="w-full border p-2 mb-2"
+              className="w-full border p-2 mb-2 dark:bg-gray-700 dark:text-white"
             />
 
             <input
@@ -173,7 +244,7 @@ const AllBooks = () => {
               onChange={(e) =>
                 setBorrowForm({ ...borrowForm, borrowerName: e.target.value })
               }
-              className="w-full border p-2 mb-2"
+              className="w-full border p-2 mb-2 dark:bg-gray-700 dark:text-white"
               placeholder="Your Name"
             />
 
@@ -194,6 +265,7 @@ const AllBooks = () => {
           </div>
         </div>
       )}
+
     </div>
   );
 };

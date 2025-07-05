@@ -13,7 +13,7 @@ const BorrowSummary = () => {
             <h2 className="text-2xl font-semibold mb-4">Borrow Summary</h2>
             <table className="w-full border">
                 <thead>
-                    <tr className="bg-gray-200">
+                    <tr className="bg-gray-200 dark:bg-gray-700 text-black dark:text-white">
                         <th className="border p-2">Book Title</th>
                         <th className="border p-2">ISBN</th>
                         <th className="border p-2">Total Quantity Borrowed</th>
@@ -26,13 +26,12 @@ const BorrowSummary = () => {
                             <td className="border p-2">{item.book.title}</td>
                             <td className="border p-2">{item.book.isbn}</td>
                             <td className="border p-2">{item.totalQuantity}</td>
-                            <td className="border p-2">
-                                {item.borrowers.join(", ")}
-                            </td>
+                            <td className="border p-2">{item.borrowers.join(", ")}</td>
                         </tr>
                     ))}
                 </tbody>
             </table>
+
         </div>
     );
 };

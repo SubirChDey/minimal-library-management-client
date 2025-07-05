@@ -3,7 +3,18 @@ import { api } from '../../redux/api';
 export const bookApi = api.injectEndpoints({
     endpoints: (builder) => ({
         getBooks: builder.query({
-            query: () => '/books',
+            query: ({ page = 1, limit = 10, filter, sortBy, sort } = {}) => {
+                const params = new URLSearchParams();
+
+                params.append('page', String(page));
+                params.append('limit', String(limit));
+
+                if (filter) params.append('filter', filter);
+                if (sortBy) params.append('sortBy', sortBy);
+                if (sort) params.append('sort', sort);
+
+                return `/books?${params.toString()}`;
+            },
             providesTags: ['Books'],
         }),
         getBook: builder.query({
