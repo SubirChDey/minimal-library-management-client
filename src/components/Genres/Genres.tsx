@@ -14,7 +14,7 @@ interface IBook {
 }
 
 const Genres = () => {
-  const { data, isLoading } = useGetBooksQuery();
+  const { data, isLoading } = useGetBooksQuery({});
   const [selectedGenre, setSelectedGenre] = useState<string>("All Genres");
 
   if (isLoading) {

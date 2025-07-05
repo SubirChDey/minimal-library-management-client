@@ -3,10 +3,10 @@ import { useGetBookQuery } from "@/redux/Features/bookApi";
 
 const BookDetails = () => {
     const { id } = useParams();
-    const { data, isLoading, isError, error } = useGetBookQuery(id);
+    const { data, isLoading, isError } = useGetBookQuery(id);
 
     if (isLoading) return <div className="p-4 text-lg">Loading book details...</div>;
-    if (isError) return <div className="p-4 text-red-500 text-lg">Error: {error?.data?.message || "Something went wrong"}</div>;
+    if (isError) return <div className="p-4 text-red-500 text-lg">Error</div>;
 
     if (!data?.data) return <div className="p-4 text-lg">Book not found.</div>;
 

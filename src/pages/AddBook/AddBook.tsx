@@ -2,7 +2,6 @@ import { useCreateBookMutation } from "@/redux/Features/bookApi";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 const AddBook = () => {
   const navigate = useNavigate();
   const [createBook] = useCreateBookMutation();
@@ -18,17 +17,25 @@ const AddBook = () => {
     available: true,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+
+    if (type === 'checkbox') {
+      const target = e.target as HTMLInputElement;
+      setFormData((prev) => ({
+        ...prev,
+        [name]: target.checked,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
 
     const newBook = { ...formData, copies: Number(formData.copies) };
 
@@ -68,17 +75,7 @@ const AddBook = () => {
             className="w-full border p-2 rounded"
           />
         </div>
-        {/* <div>
-                    <label className="block mb-1">Genre</label>
-                    <input
-                        type="text"
-                        name="genre"
-                        value={formData.genre}
-                        onChange={handleChange}
-                        required
-                        className="w-full border p-2 rounded"
-                    />
-                </div> */}
+
         <div>
           <label className="block mb-1">Genre</label>
           <select
@@ -86,11 +83,7 @@ const AddBook = () => {
             value={formData.genre}
             onChange={handleChange}
             required
-            className="w-full border p-2 rounded
-    bg-white text-black
-    dark:bg-gray-700 dark:text-white
-    dark:border-gray-600
-    "
+            className="w-full border p-2 rounded bg-white text-black dark:bg-gray-700 dark:text-white dark:border-gray-600"
           >
             <option value="" disabled className="text-gray-500 dark:text-gray-400">
               Select genre
@@ -101,7 +94,6 @@ const AddBook = () => {
               </option>
             ))}
           </select>
-
         </div>
 
         <div>
@@ -115,6 +107,7 @@ const AddBook = () => {
             className="w-full border p-2 rounded"
           />
         </div>
+
         <div>
           <label className="block mb-1">Description</label>
           <textarea
@@ -125,6 +118,7 @@ const AddBook = () => {
             className="w-full border p-2 rounded"
           />
         </div>
+
         <div>
           <label className="block mb-1">Copies</label>
           <input
@@ -136,6 +130,7 @@ const AddBook = () => {
             className="w-full border p-2 rounded"
           />
         </div>
+
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -145,9 +140,10 @@ const AddBook = () => {
           />
           <label>Available</label>
         </div>
+
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
           Add Book
         </button>

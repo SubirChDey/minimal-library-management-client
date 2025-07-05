@@ -146,7 +146,7 @@ const AllBooks = () => {
         </thead>
 
         <tbody>
-          {books.data.map((book) => (
+          {books.data.map((book: any) => (
             <tr key={book._id}>
               <td className="border p-2">
                 <Link to={`/books/${book._id}`} className="text-blue-500 underline">{book.title}</Link>

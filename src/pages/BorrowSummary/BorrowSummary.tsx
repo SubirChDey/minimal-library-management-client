@@ -1,10 +1,10 @@
 import { useBorrowSummaryQuery } from "@/redux/Features/bookApi";
 
 const BorrowSummary = () => {
-    const { data, isLoading, isError, error } = useBorrowSummaryQuery();
+    const { data, isLoading, isError } = useBorrowSummaryQuery(undefined);
 
     if (isLoading) return <div className="p-4">Loading...</div>;
-    if (isError) return <div className="p-4 text-red-500">Error: {error?.data?.message || "Something went wrong"}</div>;
+    if (isError) return <div className="p-4 text-red-500">Error: {"Something went wrong"}</div>;
 
     if (!data?.data || data.data.length === 0) return <div className="p-4">No borrowed books found.</div>;
 
@@ -21,7 +21,7 @@ const BorrowSummary = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.data.map((item, index) => (
+                    {data.data.map((item: any, index: number) => (
                         <tr key={index}>
                             <td className="border p-2">{item.book.title}</td>
                             <td className="border p-2">{item.book.isbn}</td>

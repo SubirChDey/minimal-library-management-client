@@ -1,5 +1,6 @@
+import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Book {
   _id: string;
@@ -30,13 +31,13 @@ const bookSlice = createSlice({
       state.books.push(action.payload);
     },
     updateBook: (state, action: PayloadAction<Book>) => {
-      const index = state.books.findIndex(book => book.id === action.payload.id);
+      const index = state.books.findIndex(book => book._id === action.payload._id);
       if (index !== -1) {
         state.books[index] = action.payload;
       }
     },
     deleteBook: (state, action: PayloadAction<string>) => {
-      state.books = state.books.filter(book => book.id !== action.payload);
+      state.books = state.books.filter(book => book._id !== action.payload);
     },
   },
 });

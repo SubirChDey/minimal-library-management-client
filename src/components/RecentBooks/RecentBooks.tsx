@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 
 const RecentBooks = () => {
-  const { data, isLoading } = useGetBooksQuery();
+  const { data, isLoading } = useGetBooksQuery({});
 
   const books = data?.data?.slice(0, 6) || [];
 
