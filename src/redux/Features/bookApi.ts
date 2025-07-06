@@ -53,6 +53,7 @@ export const bookApi = api.injectEndpoints({
 
         borrowSummary: builder.query({
             query: () => '/borrow',
+            providesTags: ['Borrows'],
         }),
 
         borrowBook: builder.mutation({
@@ -61,6 +62,7 @@ export const bookApi = api.injectEndpoints({
                 method: 'POST',
                 body: { book, quantity, dueDate, borrowerName },
             }),
+            invalidatesTags: ['Borrows'],
         }),
     }),
 });

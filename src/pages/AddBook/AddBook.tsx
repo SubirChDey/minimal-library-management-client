@@ -1,51 +1,61 @@
 import { useCreateBookMutation } from "@/redux/Features/bookApi";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+
+interface BookFormData {
+  title: string;
+  author: string;
+  genre: string;
+  isbn: string;
+  description: string;
+  copies: number;
+}
 
 const AddBook = () => {
   const navigate = useNavigate();
   const [createBook] = useCreateBookMutation();
   const genres = ['FICTION', 'NON_FICTION', 'SCIENCE', 'HISTORY', 'BIOGRAPHY', 'FANTASY'];
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BookFormData>({
     title: "",
     author: "",
     genre: "",
     isbn: "",
     description: "",
     copies: 1,
-    available: true,
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value, type } = e.target;
 
-    if (type === 'checkbox') {
-      const target = e.target as HTMLInputElement;
-      setFormData((prev) => ({
-        ...prev,
-        [name]: target.checked,
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === 'number' ? Number(value) : value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const newBook = { ...formData, copies: Number(formData.copies) };
-
     try {
-      await createBook(newBook).unwrap();
-      alert("Book added successfully!");
+      await createBook(formData).unwrap();
+      Swal.fire({
+        icon: 'success',
+        title: 'Book Added Successfully',
+        showConfirmButton: false,
+        timer: 1500,
+      });
       navigate("/books");
     } catch (error) {
       console.error("Error adding book:", error);
-      alert("Failed to add book.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to Add Book',
+        text: 'Please try again later.',
+      });
     }
   };
 
@@ -64,6 +74,7 @@ const AddBook = () => {
             className="w-full border p-2 rounded"
           />
         </div>
+
         <div>
           <label className="block mb-1">Author</label>
           <input
@@ -127,23 +138,14 @@ const AddBook = () => {
             value={formData.copies}
             onChange={handleChange}
             min={0}
+            required
             className="w-full border p-2 rounded"
           />
         </div>
 
-        <div className="flex items-center space-x-2">
-          <input
-            type="checkbox"
-            name="available"
-            checked={formData.available}
-            onChange={handleChange}
-          />
-          <label>Available</label>
-        </div>
-
         <button
           type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
         >
           Add Book
         </button>

@@ -6,7 +6,7 @@ A modern, responsive, and user-friendly Book Library web application built with 
 
 ## 🌐 Live Demo
 
-Check out the live application here: [https://your-live-link.com](https://your-live-link.com)
+Check out the live application here: [https://library-management-silk-five.vercel.app/](https://library-management-silk-five.vercel.app/)
 
 ---
 
